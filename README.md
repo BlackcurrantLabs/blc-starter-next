@@ -9,10 +9,10 @@ This may not fit every use case.
 | Category                   | Technology/Tool                      |
 |----------------------------|--------------------------------------|
 | Framework                  | NextJS                               |
-| ORM                        | Prisma, Typescripe backend           |
+| ORM                        | Prisma, Typescript backend           |
 | Authentication             | BetterAuth + BetterAuthUI            |
 | Styling                    | Tailwind                             |
-| Components                 | Shadcn, Daisy UI                     |
+| Components                 | Shadcn,                              |
 | Frontend State Management  | Context API                          |
 | Emails                     | SMTP, can connect to any service     |
 | Long running Jobs          | Trigger.dev                          |
