@@ -1,0 +1,98 @@
+// Prisma schema file, add all models here and run `npx prisma generate` to update the client.
+
+generator client {
+  provider   = "prisma-client"
+  output     = "../src/database/prisma"
+  engineType = "client"
+}
+
+generator zod {
+  provider = "prisma-zod-generator"
+  output   = "../src/database/zod"
+  config   = "./prisma-zod-generator.config.json"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Add custom fields that need to be present in session to @/auth.ts also.
+
+model User {
+  // Base fields added by Better Auth
+  id            String    @id
+  name          String    @db.Text
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?   @db.Text
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  // Admin Roles and permissions added by Better Auth
+  role          String?   @db.Text
+  banned        Boolean?  @default(false)
+  banReason     String?   @db.Text
+  banExpires    DateTime?
+  married       Boolean   @default(false)
+
+  // Custom fields for user profile
+  // add all of these you need access to in client to @/auth.ts
+  // add in @/providers also if these are to be set in signups
+  designation   String? @db.VarChar(10)
+  company       String? @db.VarChar(100)
+  phone         String? @db.VarChar(12)
+  countryCode   String? @db.VarChar(4)
+  phoneVerified Boolean @default(false)
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?  @db.Text
+  userAgent String?  @db.Text
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String? @db.Text
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String    @db.Text
+  providerId            String    @db.Text
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?   @db.Text
+  password              String?   @db.Text
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String   @db.Text
+  value      String   @db.Text
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
