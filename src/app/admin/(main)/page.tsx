@@ -12,7 +12,7 @@ export default async function AdminHome() {
 
   return <section className="mx-auto grid grid-cols-4 gap-3">
 
-  {rolesAndCounts.map(r => <Card key={r.role}>
+  {rolesAndCounts.map(r => <Card key={r.role} className="bg-slate-100 rounded-sm">
     <CardHeader>
       {r.role}s
     </CardHeader>

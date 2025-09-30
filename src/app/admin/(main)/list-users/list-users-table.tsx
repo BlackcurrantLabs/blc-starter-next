@@ -19,12 +19,20 @@ import {
   TableBody,
   TableCaption,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { DataTableColumnHeader } from "../../../../components/tables/data-table-column-header";
-import { User, ShieldCheck, ShieldQuestionMark, UserStar, ExternalLink } from "lucide-react";
+import {
+  User,
+  ShieldCheck,
+  ShieldQuestionMark,
+  UserStar,
+  ExternalLink,
+  UserPlus,
+} from "lucide-react";
 import { DataTableToolbar } from "../../../../components/tables/data-table-toolbar";
 import { searchUsers } from "./search.action";
 import { useRouter } from "next/navigation";
@@ -67,7 +75,12 @@ const columns = [
     ),
     enableHiding: false,
     enableSorting: false,
-    cell: (props) => props.row.original.emailVerified ? <ShieldCheck size={16} className="inline"/> : <ShieldQuestionMark size={16} className="inline"/>,
+    cell: (props) =>
+      props.row.original.emailVerified ? (
+        <ShieldCheck size={16} className="inline" />
+      ) : (
+        <ShieldQuestionMark size={16} className="inline" />
+      ),
     meta: {
       filterTitle: "Email Verified",
       filterOptions: [
@@ -123,13 +136,23 @@ const columns = [
     ),
   }),
   columnHelper.display({
-    id: "Actions",
-    header: "Actions",
-    cell: (props) => <Link href={`/admin/user-details/${props.row.id}`}>
-      <Button variant={"secondary"} size={"icon"}>
-        <ExternalLink></ExternalLink>
-      </Button>
-    </Link>,
+    id: "Open",
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        title="Open"
+        className="text-end"
+      ></DataTableColumnHeader>
+    ),
+    cell: ({ row, cell }) => (
+      <div className="text-end">
+      <Link href={`/admin/user-details/${row.id}`}>
+        <Button variant={"secondary"} size={"icon"}>
+          <ExternalLink></ExternalLink>
+        </Button>
+      </Link>
+      </div>
+    ),
   }),
 ];
 
@@ -141,7 +164,7 @@ export default function ListUsersTable({
   const [data, setData] = useState(initialData);
   const [total, setTotal] = useState(initialTotal);
   const skipPageResetRef = useRef(true);
-  const router = useRouter()
+  const router = useRouter();
 
   const [tableState, setTableState] = useState<TableState>(
     initialState as TableState
@@ -187,44 +210,53 @@ export default function ListUsersTable({
   });
 
   const addUser = () => {
-    router.push('/admin/user-details/new')
-  }
+    router.push("/admin/user-details/new");
+  };
 
   return (
     <section className="space-y-4 py-4">
-      <DataTableToolbar table={table} tableActions={[<Button key={'create'} onClick={addUser}>Create User</Button>]}></DataTableToolbar>
-      <Table>
-        <TableCaption>List of users</TableCaption>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id} className="border-t">
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id} className="px-4 py-2">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <DataTableToolbar
+        table={table}
+        tableActions={[
+          <Button key={"create"} onClick={addUser} variant={"outline"}>
+            <UserPlus className="inline"></UserPlus>
+            Create User
+          </Button>,
+        ]}
+      ></DataTableToolbar>
+      <div className="border rounded-md overflow-hidden">
+        <Table className="border-collapse animate-in">        
+          <TableHeader className="bg-slate-100">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id} colSpan={header.colSpan} className="px-4">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id} className="">
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id} className="px-4 py-2">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
       <DataTablePagination table={table}></DataTablePagination>
     </section>
   );
