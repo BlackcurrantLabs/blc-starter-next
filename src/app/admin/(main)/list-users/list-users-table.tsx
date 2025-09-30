@@ -24,7 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DataTableColumnHeader } from "../../../../components/tables/data-table-column-header";
-import { User, ShieldCheck, ShieldQuestionMark, UserStar } from "lucide-react";
+import { User, ShieldCheck, ShieldQuestionMark, UserStar, ExternalLink } from "lucide-react";
 import { DataTableToolbar } from "../../../../components/tables/data-table-toolbar";
 import { searchUsers } from "./search.action";
 import { useRouter } from "next/navigation";
@@ -58,27 +58,18 @@ const columns = [
     enableSorting: false,
     enableHiding: false,
   }),
-  columnHelper.accessor("phone", {
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        title="Phone"
-      ></DataTableColumnHeader>
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  }),
   columnHelper.accessor("emailVerified", {
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title="Phone Verified"
+        title="Email Verified"
       ></DataTableColumnHeader>
     ),
     enableHiding: false,
     enableSorting: false,
+    cell: (props) => props.row.original.emailVerified ? <ShieldCheck size={16} className="inline"/> : <ShieldQuestionMark size={16} className="inline"/>,
     meta: {
-      filterTitle: "Verified",
+      filterTitle: "Email Verified",
       filterOptions: [
         {
           icon: ShieldCheck,
@@ -118,16 +109,6 @@ const columns = [
       ],
     },
   }),
-  columnHelper.accessor("banned", {
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        title="Banned"
-      ></DataTableColumnHeader>
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  }),
   columnHelper.accessor("createdAt", {
     header: ({ column }) => (
       <DataTableColumnHeader
@@ -145,8 +126,8 @@ const columns = [
     id: "Actions",
     header: "Actions",
     cell: (props) => <Link href={`/admin/user-details/${props.row.id}`}>
-      <Button>
-        Open
+      <Button variant={"secondary"} size={"icon"}>
+        <ExternalLink></ExternalLink>
       </Button>
     </Link>,
   }),

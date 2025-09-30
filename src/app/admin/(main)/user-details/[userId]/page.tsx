@@ -30,6 +30,7 @@ import { UserSchema } from "@/database/zod/schemas/models";
 import { updateUserAction } from "./update-user.action";
 import { authClient } from "@/lib/auth-client";
 import { Badge } from "@/components/ui/badge";
+import { Loader2Icon } from "lucide-react";
 
 export const formSchema = UserSchema.omit({
   emailVerified: true,
@@ -226,7 +227,8 @@ export default function UserDetails({
             </FormItem>
           )}
         />
-        <Button type="submit">
+        <Button type="submit" disabled={!userForm.formState.isValid || userForm.formState.isSubmitting} >
+          {userForm.formState.isSubmitting && <Loader2Icon className="animate-spin" />}
           {mode === "ADD" ? "Create User" : "Update User"}
         </Button>
       </form>
